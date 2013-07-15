@@ -347,7 +347,7 @@ void set_showPrice(char boolean)
  *    not have a set price
  *    @return 0 on success.
  */
-int econ_refreshcommprice(Commodity *comm)
+int econ_refreshcommprice(void)
 {
    StarSystem *sys, *nsys;
    int s, c, j, jmp;
@@ -357,28 +357,32 @@ int econ_refreshcommprice(Commodity *comm)
    for (s=0; s<systems_nstack; s++){
       sys = systems_stack+s;
 
-      if (sys->is_priceset[c])
-         continue;
-      total=0.0;
-      n_neighbors=0.0;
+      for (c=0; c<econ_nprices; c++){
 
-         /* get number of trading neighbors and the sum of their prices */
-      for (jmp=0; jmp<sys->njumps; jmp++){
-         if (jp_isFlag( sys->jumps+jmp, JP_EXITONLY) || jp_isFlag(sys->jumps+jmp, JP_HIDDEN))
+         if (sys->is_priceset[c])
             continue;
-         nsys = sys->jumps[jmp].target; /* neighboring system */
-         for (j=0; j<nsys->njumps; j++){ /* check that the jump back is valid */
-            if (sys == nsys->jumps[j].target){
-               if (!jp_isFlag( nsys->jumps+j, JP_EXITONLY ) && !jp_isFlag(sys->jumps+jmp, JP_HIDDEN)){
-                  total+=nsys->prices[c];
-                  n_neighbors+=1.0;
+         total=0.0;
+         n_neighbors=0.0;
+
+            /* get number of trading neighbors and the sum of their prices */
+         for (jmp=0; jmp<sys->njumps; jmp++){
+            if (jp_isFlag( sys->jumps+jmp, JP_EXITONLY) || jp_isFlag(sys->jumps+jmp, JP_HIDDEN))
+               continue;
+            nsys = sys->jumps[jmp].target; /* neighboring system */
+            for (j=0; j<nsys->njumps; j++){ /* check that the jump back is valid */
+               if (sys == nsys->jumps[j].target){
+                  if (!jp_isFlag( nsys->jumps+j, JP_EXITONLY ) && !jp_isFlag(sys->jumps+jmp, JP_HIDDEN)){
+                     total+=nsys->prices[c];
+                     n_neighbors+=1.0;
+                  }
+                  break;
                }
-               break;
             }
          }
+            /* put in the new price */
+         // printf("price:%f\n\ttotal:%f\n\tneighbors:%f\n",total/n_neighbors, total, n_neighbors);
+         sys->prices[c] = total/n_neighbors;
       }
-         /* put in the new price */
-      sys->prices[c] = total/n_neighbors;
    }
 
    return 0;
@@ -391,8 +395,6 @@ int econ_refreshcommprice(Commodity *comm)
  */
 void econ_updateprices(void)
 {
-   int c;
-
    //int i;
    //for (i=0; i<60; i++)
    econ_refreshcommprice();
