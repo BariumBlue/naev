@@ -3340,13 +3340,11 @@ int space_sysSave( xmlTextWriterPtr writer )
       xmlw_startElem(writer,"prices");
       xmlw_attr(writer,"sys","%s",sys->name);
       for (c=0; c<econ_nprices; c++) {
-         if ( sys->is_priceset[c] && (xml_prices[i]==NULL || sys->prices[c]!=xml_prices[i][c])){
-            xmlw_startElem(writer,"commodity");
-            xmlw_attr(writer, "name", "%s", commodity_stack[c].name);
-            nsnprintf(buf, 32, "%.2f", sys->prices[c]);
-            xmlw_str(writer, "%s", buf);
-            xmlw_endElem(writer); /* "commodity" */
-         }
+         xmlw_startElem(writer,"commodity");
+         xmlw_attr(writer, "name", "%s", commodity_stack[c].name);
+         nsnprintf(buf, 32, "%.2f", sys->prices[c]);
+         xmlw_str(writer, "%s", buf);
+         xmlw_endElem(writer); /* "commodity" */
       }
       xmlw_endElem(writer); /* prices */
    }
