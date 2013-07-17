@@ -30,6 +30,7 @@ static int economyL_setPrice( lua_State *L );
 static int economyL_unsetPrice( lua_State *L );
 static int economyL_isPriceSet( lua_State *L );
 
+extern int econ_refreshprices(void);
 
 static const luaL_reg economy_methods[] = {
    { "updatePrices", economyL_updatePrices },
@@ -100,14 +101,18 @@ int nlua_loadEconomy( lua_State *L, int readonly )
 
 
 /**
- * @brief refreshes the prices of any systems with unset prices, if the prices need refreshing. 
- *    Automatically done when jumping, landing, or taking off
+ * @brief refreshes the prices of any systems with unset prices, if the prices need refreshing.
+ *    @luaparam ntimes number of times to call the refresh function. Defaults to 60 times
  *
  * @usage economy.updatePrices()
  */
-static int economyL_updatePrices( lua_State *L ){
-   (void) L;
-   econ_updateprices();
+static int economyL_updatePrices( lua_State *L )
+{
+   int i;
+   int ntimes = lua_tonumber(L, 1);
+   if (ntimes==0) ntimes = REFRESHES_PER_CALL;
+   for (i=0; i<ntimes; i++)
+      econ_refreshprices();
    return 0;
 }
 

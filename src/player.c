@@ -168,6 +168,8 @@ extern int pilot_nstack;
  */
 extern int map_npath;
 
+extern int econ_refreshprices(void);
+
 
 /*
  * prototypes
@@ -222,6 +224,7 @@ int player_init (void)
  */
 static void player_newSetup( int tutorial )
 {
+   int i;
    double x, y;
 
    /* Set up GUI. */
@@ -246,7 +249,8 @@ static void player_newSetup( int tutorial )
    news_init();
 
    /* Initialize economy prices */
-   econ_updateprices();
+   for (i=0; i<REFRESHES_NEWGAME; i++)
+      econ_refreshprices();
 
    cam_setTargetPos( x, y, 0 );
    cam_setZoom( conf.zoom_far );

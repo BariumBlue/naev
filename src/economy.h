@@ -22,6 +22,9 @@ typedef int64_t credits_t;
 #define CREDITS_MIN        INT64_MIN
 #define CREDITS_PRI        PRIu64
 
+#define REFRESHES_PER_CALL	60
+#define REFRESHES_NEWGAME		300
+
 /**
  * @struct Commodity
  *

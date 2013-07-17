@@ -65,7 +65,7 @@ char show_prices; /* whether or not to show prices on the map, default 0 */
 /*
  * Prototypes.
  */
-int econ_refreshcommprice(void);   /* Refresh the prices of a commodity */
+int econ_refreshprices(void);   /* Refresh the prices of a commodity */
 /* Commodity. */
 static void commodity_freeOne( Commodity* com );
 static int commodity_parse( Commodity *temp, xmlNodePtr parent );
@@ -347,7 +347,7 @@ void set_showPrice(char boolean)
  *    not have a set price
  *    @return 0 on success.
  */
-int econ_refreshcommprice(void)
+int econ_refreshprices(void)
 {
    StarSystem *sys, *nsys;
    int s, c, j, jmp;
@@ -395,9 +395,9 @@ int econ_refreshcommprice(void)
  */
 void econ_updateprices(void)
 {
-   //int i;
-   //for (i=0; i<60; i++)
-   econ_refreshcommprice();
+   int i;
+   for (i=0; i<REFRESHES_PER_CALL; i++)
+      econ_refreshprices();
 }
 
 /**
